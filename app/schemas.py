@@ -15,7 +15,7 @@ class SearchRequest(BaseModel):
     query: str
 
 class SearchResponse(BaseModel):
-    total: str
+    total: int
     results: list[DocumentResponse]
 
 class DeleteResponse(BaseModel):
