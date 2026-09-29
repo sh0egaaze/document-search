@@ -13,7 +13,7 @@ async def init_es() -> None:
         exists = await es_client.indices.exists(index=INDEX_NAME)
         if not exists:
             await es_client.indices.create(
-                index="INDEX_NAME",
+                index=INDEX_NAME,
                 body={
                     "mappings": {
                         "properties": {
@@ -46,7 +46,7 @@ async def delete_document(doc_id: int) -> None:
     except Exception as e:
         print(f"Document {doc_id} not found in Elasticsearch for deletion: {e}")
 
-async def search_document(query: str, limit: int = 20) -> list[int]:
+async def search_documents(query: str, limit: int = 20) -> list[int]:
     try:
         response = await es_client.search(
             index=INDEX_NAME,
