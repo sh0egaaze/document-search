@@ -82,6 +82,3 @@ async def search_documents(query: str, limit: int = 20) -> list[int]:
         return []
     finally:
         await es.close()
-
-async def close_es() -> None:
-    pass
