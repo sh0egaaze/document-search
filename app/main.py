@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 from app.database import get_session, init_db
 from app import models, schemas
-from app.elasticsearch_client import init_es, search_documents, delete_document, close_es
+from app.elasticsearch_client import init_es, search_documents, delete_document
 
 
 @asynccontextmanager
@@ -19,8 +19,6 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    print("Closing connections...")
-    await close_es()
     print("Application stopped.")
 
 
