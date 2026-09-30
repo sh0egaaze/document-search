@@ -31,6 +31,8 @@ async def init_es() -> None:
             print(f"Index '{INDEX_NAME}' created successfully")
     except BadRequestError as e:
         print(f"Error during index creation: {e}")
+    finally:
+        await es.close()
 
 async def index_document(doc_id: int, text: str) -> None:
     es = get_es()
