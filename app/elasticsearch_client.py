@@ -3,16 +3,18 @@ from elasticsearch import AsyncElasticsearch, BadRequestError
 from app.config import settings
 
 
-es_client = AsyncElasticsearch(settings.elasticsearch_url)
-
 INDEX_NAME = "documents"
+
+def get_es() -> AsyncElasticsearch:
+    return AsyncElasticsearch(settings.elasticsearch_url)
 
 
 async def init_es() -> None:
+    es = get_es()
     try:
-        exists = await es_client.indices.exists(index=INDEX_NAME)
+        exists = await es.indices.exists(index=INDEX_NAME)
         if not exists:
-            await es_client.indices.create(
+            await es.indices.create(
                 index=INDEX_NAME,
                 body={
                     "mappings": {
@@ -31,24 +33,32 @@ async def init_es() -> None:
         print(f"Error during index creation: {e}")
 
 async def index_document(doc_id: int, text: str) -> None:
-    await es_client.index(
-        index=INDEX_NAME,
-        id=str(doc_id),
-        body={
-            "id": doc_id,
-            "text": text
-        }
-    )
+    es = get_es()
+    try:
+        await es.index(
+            index=INDEX_NAME,
+            id=str(doc_id),
+            body={
+                "id": doc_id,
+                "text": text
+            }
+        )
+    finally:
+        await es.close()
 
 async def delete_document(doc_id: int) -> None:
+    es = get_es()
     try:
-        await es_client.delete(index=INDEX_NAME, id=str(doc_id))
+        await es.delete(index=INDEX_NAME, id=str(doc_id))
     except Exception as e:
         print(f"Document {doc_id} not found in Elasticsearch for deletion: {e}")
+    finally:
+        await es.close()
 
 async def search_documents(query: str, limit: int = 20) -> list[int]:
+    es = get_es()
     try:
-        response = await es_client.search(
+        response = await es.search(
             index=INDEX_NAME,
             body={
                 "query": {
@@ -68,6 +78,8 @@ async def search_documents(query: str, limit: int = 20) -> list[int]:
     except Exception as e:
         print(f"Elasticsearch search error: {e}")
         return []
+    finally:
+        await es.close()
 
 async def close_es() -> None:
-    await es_client.close()
+    pass
