@@ -74,7 +74,7 @@ async def test_deleted_document_not_searchable(client: AsyncClient):
 
     await asyncio.sleep(1)
 
-    search_response = await client.post("/search", json={"query": "жига"})
+    search_response = await client.post("/search", json={"query": "анон"})
     assert search_response.status_code == 200
     search_data = search_response.json()
 
