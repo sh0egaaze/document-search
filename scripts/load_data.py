@@ -5,7 +5,7 @@ from datetime import datetime
 
 from app.database import init_db, async_session, engine
 from app.models import Document
-from app.elasticsearch_client import init_es, index_document, close_es
+from app.elasticsearch_client import init_es, index_document
 
 CSV_FILE_PATH = "data/posts.csv"
 
@@ -26,7 +26,6 @@ async def load_data():
         for index, row in enumerate(reader, 1):
             try:
                 created_date = datetime.strptime(row["created_date"], "%Y-%m-%d %H:%M:%S")
-
                 rubrics = ast.literal_eval(row["rubrics"])
 
                 doc = Document(
@@ -56,13 +55,13 @@ async def load_data():
         print("Writing to Elasticsearch...")
         await asyncio.gather(*es_tasks)
 
-    print("Data successfully loaded to PostgreSQl and Elasticsearch!")
+    print("Data successfully loaded to PostgreSQL and Elasticsearch!")
+
 
 async def main():
     try:
         await load_data()
     finally:
-        await close_es()
         await engine.dispose()
 
 if __name__ == "__main__":
